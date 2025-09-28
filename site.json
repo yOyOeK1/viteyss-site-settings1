@@ -1,0 +1,16 @@
+{
+    "oName": "s_vyssettings1Page",
+    "o": null,
+    "dir": "viteyss-site-settings1",
+    "asModule": true,
+    "asVite": true,
+    "asPlugin": true,
+    "jssrc":["c_vys_settings1_Page.js"],
+    "enable": true,
+    "author": "Bartłomiej Ceglik <yoyoek@wp.pl>",
+    "ver": "0.0.1",
+    "desc": "To make settings easy.",
+    "otdm":{
+        "playground": false
+    }
+}
