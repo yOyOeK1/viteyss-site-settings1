@@ -14,12 +14,17 @@
 
             <div v-for="conf in configs">
 
+                
                 <div class="cSetSheh3">{{ strFirtLeterLarge(conf.name) }}</div>
+
+                <div v-show="conf.icon"><img :src="conf.icon" /></div>
+                
                 <div v-show="conf.desc" 
                     class="cSetSheh3desc">{{ conf.desc }}</div>
                 <div v-show="conf.html" v-html="conf.html"
                     class="cSetSheh3html"></div>
 
+                    
                 <div v-if="conf['fields']">
                     <div v-for="field in conf['fields']">
                         <div class="cSetSheh4">
@@ -104,7 +109,7 @@ export default{
             this.pageOpenAn = parseInt( pager.currentPage );
             if( this.myPageCheck == -1 ){
                 this.myPageCheck = setInterval(()=>{
-                    console.log('cSettings ... page current correct ');
+                    //console.log('cSettings ... page current correct ');
                     if( pager.currentPage != this.pageOpenAn ){
                         console.log('cSettings clone different page then start.');
                         this.closePanel();

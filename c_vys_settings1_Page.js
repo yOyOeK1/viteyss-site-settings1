@@ -1,6 +1,7 @@
 
-import { createApp } from 'vue';
+import { createApp,ref,watch } from 'vue';
 import CSettings from './assets/cSettings.vue';
+import CEggTry from './assets/cEggTry.vue';
 
 
 class s_vyssettings1Page{
@@ -9,10 +10,22 @@ class s_vyssettings1Page{
     this.set1App = createApp( CSettings, { 
       'name':'setOpts'
     } );
+    this.egg1App = createApp( CEggTry, {
+      name:'eggtry1'
+    });
 
     $("body").append('<div id="cSet1Div"></div>');
     console.log('Settings1 .... injection do body');
     this.set1App.mount('#cSet1Div');
+
+    $("body").append(`<div id="cEggTry1Div"></div>`);
+    console.log('Settings1 - eggtry1div.... injection do body');
+    this.egg1App.mount('#cEggTry1Div');
+
+
+    setTimeout(()=>{
+      this.runDefault_eTry();
+    },500);
 
   }
   
@@ -44,11 +57,60 @@ class s_vyssettings1Page{
 
   }
 
+  timeStampToHHMM = ( nVal )=>{
+    nVal = new Date( nVal );
+    return String(nVal.getHours()).padStart(2, '0')+':'+
+      String(nVal.getMinutes()).padStart(2, '0');
+  }
+
+  
+
+
+  runDefault_eTry=()=>{
+    this.eTry = [
+      
+        { name: "Time1", html: '00:00'},
+
+        { name: "Time2", value: '-', watchOpts:{
+          valPath:'siteByKey.s_vyssettings1Page.o.egg1App._instance.ctx.$data.tNow',
+          'onchange': (field, nVal,oVal,watcher)=>{ 
+            //console.log( `callback from wath`,nVal );
+            field.value = this.timeStampToHHMM(nVal);
+            field.title = new Date(nVal).toLocaleString();
+          }
+        } },
+
+        //<i class="fa-solid fa-display"></i>
+        { name: "WeakLock", title: "WeakLock - unknown status.",
+            value: '<i class="fa-solid fa-display"></i>' },
+
+        { name: 'WebSocket', title: 'WebSocket connection status', value: '-', watchOpts:{
+          valPath:'wsInIsOk',
+          'onchange': (field, nVal,oVal, watcher)=>{ 
+            //console.log( `callback from wath`,nVal );
+            if( nVal == true ){
+              field.value = '<i style="color:green;" class="fa-solid fa-link"></i>';
+              field.title = "WebSocket is Good \nregisterd at: "+this.timeStampToHHMM(watcher.entryDate);
+            }else if( nVal == false){
+              field.value = '<i style="color:red;" class="fa-solid fa-link"></i>';
+              field.title = 'WebSocket is Down!';
+            }else{  
+              field.value = '<i style="color:orange;" class="fa-solid fa-link"></i>';
+              field.title = "WebSocket\nState unknown: ["+nVal+"]";
+            }
+          }
+        } }
+      ];
+
+      eggTryOpts.methods.openPanelWithConfig( this.eTry );
+  }
+
   getHtmlAfterLoad = () =>{
     cl(`${this.getName} - getHtmlAfterLoad()`);
     setTimeout(()=>{
       setOpts.methods.openPanel();
-    },500);
+      
+    },1500);
     
   }
 
