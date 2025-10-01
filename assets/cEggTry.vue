@@ -23,7 +23,8 @@
 
             
 
-                <td v-for="field in configs">
+                <td v-for="field in configs"
+                    :class="(eggClickAt == field.name ? 'eggClickAt':'')">
 
                     <div v-show="field.text"
                         :title="field.title ? field.title : field.name"
@@ -32,7 +33,9 @@
                     <div v-show="field.html"
                         :title="field.title ? field.title : field.name" v-html="field.html" class="cEggTrySheh3html"></div>
 
-                    <div v-show="field.value" 
+                    
+                    <div v-show="field.value"
+                        @click="eTryClick(field)"
                         :title="field.title ? field.title : field.name" v-html="field.value"class="cEggTrySheh3html"></div>
 
                     <div v-show="field.filesList">
@@ -69,8 +72,8 @@
 
         
         
-
-        <div>watchers: len({{  watchList.length }})
+        
+        <div v-show="(false)">watchers: len({{  watchList.length }})
             <p v-for="w of watchList">
                 {{ w.key.substring(0,15) }} {{ w.lastV }} {{Date.now()-w.entryDate}}
             </p>
@@ -103,6 +106,7 @@ export default{
             //isOpen: true
             setOpts,
             configs: [],
+            eggClickAt: -1,
             pageOpenAn: '',
             myPageCheck: -1,
             watchList: [],
@@ -125,6 +129,23 @@ export default{
 
     },
     methods:{
+        eTryConfigClose(){
+            this.eggClickAt = -1;
+        },
+
+        eTryClick(field){
+            console.log('click on field name:'+field.name);
+            if( 'onclick' in field && field.onclick == 'settings' && 'settingsOpts' in field ){
+                if( setOpts.isOpen == true ){
+                    setOpts.methods.closePanel();
+                }
+                setOpts.methods.openPanelWithConfig( field.settingsOpts, field.name, this.eTryConfigClose );
+                this.eggClickAt = field.name;
+                
+            }
+        },
+
+
         strFirtLeterLarge(st){
             return st.charAt(0).toUpperCase() + st.slice(1);
         },
@@ -243,13 +264,13 @@ export default{
     border-radius: 6px;
     border-top: 1px solid rgb(38, 36, 36);
     border-right: 1px solid rgb(38, 36, 36);
-    background-color: #ffffff88;
+    background-color: #ffffff66;
     min-width: 33vw;
-    min-height: 25vh;
+    min-height: 10vh;
 
     position: absolute;
     left:0px;
-    bottom:0px;
+    bottom:-8px;
 
     z-index: 999;
 }
@@ -258,13 +279,13 @@ export default{
     border-top: 1px solid rgb(38, 36, 36);
     border-left: 1px solid rgb(38, 36, 36);
     min-width: 33vw;
-    min-height: 25vh;
-    background-color: #ffaaaa88;
+    min-height: 10vh;
+    background-color: #ffaaaa66;
     
     position: absolute;
     
     right:0px;
-    bottom:0px;
+    bottom:-8px;
     
     z-index: 999;
 }
@@ -274,6 +295,12 @@ export default{
     color: white;
     padding-left: 5px;
     width:100%;
+}
+
+.eggClickAt{
+    border-radius: 3px;
+    border: solid 1px orange;
+    background-color: white;
 }
 
 .cEggTrySheh3{

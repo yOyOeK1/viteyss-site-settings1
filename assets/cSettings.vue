@@ -1,11 +1,11 @@
 <template>
     <div v-show="setOpts.isOpen"
-        class="cSetShe"
+        :class="'cSetShe '+(theme==1?'':'cSetSheTheme'+theme)"
         >
 
         <div class="cSSTop">
             <button @click="closePanel()">x</button>
-            <small>Settings:</small> {{ name }}
+            <small>{{ title }} </small>
         </div>
 
         conf items: ({{ configs.length }})
@@ -91,10 +91,13 @@ export default{
 
         return {
             //isOpen: true
+            title: 'Settings: '+this.name,
+            theme: 1,
             setOpts,
             configs: [],
             pageOpenAn: '',
-            myPageCheck: -1
+            myPageCheck: -1,
+            callBackOnClose: undefined
         };
     },
     computed:{
@@ -106,6 +109,18 @@ export default{
         },
         openPanel(){
             this.setOpts.isOpen = true;
+
+            //$('#mainPage').css('box-shadow', 'inset 5px 5px 50px rgba(0, 0, 0, 0.8)');
+            aajs.animate('#mainPage',{
+                'box-shadow': [
+                    'inset 0px 0px 0px rgba(0, 0, 0, 0.0)',
+                    'inset 15px 15px 40px rgba(0, 0, 0, 1.0)'
+                ],
+                duration: 100,        // Animation duration in milliseconds
+                easing: 'easeInOutQuad' // Easing function for the animation
+                });
+
+
             this.pageOpenAn = parseInt( pager.currentPage );
             if( this.myPageCheck == -1 ){
                 this.myPageCheck = setInterval(()=>{
@@ -119,14 +134,35 @@ export default{
         },
         closePanel(){
             this.setOpts.isOpen = false;
+            //$('#mainPage').css('box-shadow','');
+            aajs.animate('#mainPage',{
+                'box-shadow': [
+                    'inset 15px 15px 40px rgba(0, 0, 0, 1.0)',
+                    'inset 0px 0px 0px rgba(0, 0, 0, 0.0)'
+                ],
+                duration: 100,        // Animation duration in milliseconds
+                easing: 'easeInOutQuad' // Easing function for the animation
+                });
             clearInterval( this.myPageCheck );
             this.myPageCheck = -1;
+            if( this.callBackOnClose != undefined )
+                this.callBackOnClose();
         },
         restoreSettings( clientName ){
             return [];
         },
-        openPanelWithConfig(configs){
+        openPanelWithConfig(configs, title = '', callBackOnClose = undefined){
             this.configs = configs;
+            if( title != '' ){
+                this.title = title;
+                this.theme = 2;
+            }else{
+                this.title = 'Settings: '+this.name;
+                this.theme = 1;
+            }
+
+            this.callBackOnClose = callBackOnClose;
+
             this.openPanel();
         }
     }
@@ -136,7 +172,7 @@ export default{
 
 <style>
 .cSetShe{
-    border-left: 3px solid rgb(38, 36, 36);
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 1.0);
     background-color: rgb(220, 255, 151);
     min-width: 45vw;
     min-height: 100vh;
@@ -145,8 +181,14 @@ export default{
     right:0px;
     top:0px;
 
+    
+
     z-index: 999;
 }
+.cSetSheTheme2{
+    background-color: rgb(197, 181, 218);
+}
+
 .cSSTop{
     border-bottom: 3px solid red;
     background-color: rgb(38, 36, 36);

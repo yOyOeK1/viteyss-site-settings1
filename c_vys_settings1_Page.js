@@ -67,9 +67,31 @@ class s_vyssettings1Page{
 
 
   runDefault_eTry=()=>{
+
+    let confT1 = [{ 
+      name: 'Map at',
+      fields: [
+          { name: "lat",      text: 0.3424 },
+          { name: "lng",      text: 1.42324 },
+          { name: "Zoom",     range: true, min:1, max:22, step:1, value:5, callBackF:(ev='', value='')=>{ console.log('zoom change '+value);} }
+        ]
+      },
+      { 
+        name: 'Mapio - settings',
+        desc: "Setting of map ("+this.mapname+")",
+        
+      }];
+
+
+
     this.eTry = [
       
         { name: "Time1", html: '00:00'},
+
+        { name: "ContextMenu", value: '<i class="fa-solid fa-mobile-screen-button"></i>',
+            onclick: 'settings', settingsOpts: confT1
+        },
+
 
         { name: "Time2", value: '-', watchOpts:{
           valPath:'siteByKey.s_vyssettings1Page.o.egg1App._instance.ctx.$data.tNow',
