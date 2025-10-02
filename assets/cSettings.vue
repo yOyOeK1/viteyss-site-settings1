@@ -36,6 +36,9 @@
                         <div v-show="field.desc" class="cSetSheh3desc">{{ field.desc }}</div>
                         <div v-show="field.html" v-html="field.html" class="cSetSheh3html"></div>
                         
+                        <div v-show="field.whantDiv"
+                            :id="field.whantDiv">{{ field.whantDiv }}</div>
+
                         <div v-show="field.filesList">
                             <textarea v-show="field.filesList"
                                 v-model="field.value"
@@ -175,6 +178,7 @@ export default{
     box-shadow: 10px 10px 30px rgba(0, 0, 0, 1.0);
     background-color: rgb(220, 255, 151);
     min-width: 45vw;
+    max-width: 45vw;
     min-height: 100vh;
     
     position: absolute;

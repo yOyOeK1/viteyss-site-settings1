@@ -88,7 +88,7 @@ class s_vyssettings1Page{
       
         { name: "Time1", html: '00:00'},
 
-        { name: "ContextMenu", value: '<i class="fa-solid fa-mobile-screen-button"></i>',
+        { name: "ContextMenu", value: '<i class="fa-solid fa-square-caret-down"></i>',
             onclick: 'settings', settingsOpts: confT1
         },
 
