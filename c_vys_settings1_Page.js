@@ -2,11 +2,16 @@
 import { createApp,ref,watch } from 'vue';
 import CSettings from './assets/cSettings.vue';
 import CEggTry from './assets/cEggTry.vue';
-
+import { getStats, localStorageH } from './libs/localDb';
 
 class s_vyssettings1Page{
 
   constructor(){
+    localStorageH['reopenPanelWithConfig'] = this.reopenPanelWithConfig;
+    window['localStorageH'] = localStorageH;
+    this.updateThisClientIdent();
+
+
     this.set1App = createApp( CSettings, { 
       'name':'setOpts'
     } );
@@ -27,8 +32,39 @@ class s_vyssettings1Page{
       this.runDefault_eTry();
     },500);
 
+
+
+
+  const isAndroid = navigator.userAgent.toLowerCase().includes('android');
+  if ( 0 || isAndroid==true) {
+    // Code to execute if the device is Android
+    setTimeout(()=>{
+      setOpts.methods.openPanelWithConfig([
+        {
+          name: 'Fullscreen?',
+          html: `<button onclick="mkfullscreen();">yes</button>`
+        }], 'For mobile');
+    },500);
+    console.log("This is an Android device.");
+    //$('#popupBasic').html(`<br><input type="button" style="border:10; padding:20px;"onclick="mkfullscreen();$('#popupBasic').popup('close');" value="fullscreen9"><br><br>`);
+    //$('#popupBasic').popup();
+    //$('#popupBasic').popup('open');
+  } else {
+    // Code to execute if the device is not Android
+    console.log("This is not an Android device.");
+  }
+
+
+
+
+
   }
   
+  updateThisClientIdent = () => {
+    window['thisClientIdent'] = localStorageH.getK('device/name', thisClientIdent);
+  }
+
+
   get getName(){
     return `vys settings1`;
   }
@@ -127,12 +163,59 @@ class s_vyssettings1Page{
       eggTryOpts.methods.openPanelWithConfig( this.eTry );
   }
 
+  reopenPanelWithConfig = () => {
+    let stoH = localStorageH.getStats();
+    setOpts.methods.openPanelWithConfig([
+      {
+        name: 'This device',
+        desc: 'Enter identification helpers for this device',
+        fields: [
+          { name: "device name",    inputText: true, value:thisClientIdent,  
+            callBackF:(ev='',val='')=>{ 
+              localStorageH.setK('device/name',val); 
+              this.updateThisClientIdent(); 
+            } },
+          { name: "location",       inputText: true, value:localStorageH.getK('device/location',''),  
+            callBackF:(ev='',val='')=>{ 
+              localStorageH.setK('device/location',val);
+              this.updateThisClientIdent();
+            } },
+          { name: "Description",    inputText: true, value:localStorageH.getK('device/desc',''),  
+            callBackF:(ev='',val='')=>{ 
+              localStorageH.setK('device/desc',val);
+              //this.updateThisClientIdent();
+            } },
+        ]
+      },
+      {
+        name: 'stoH - localStorage',
+        //desc: JSON.stringify(stoH,null,4),
+        fields: [
+          { name: "Settings", html: `
+              <button onclick='localStorageH.reopenPanelWithConfig()'>
+                reload</button>
+              <button onclick='localStorage.clear();localStorageH.reopenPanelWithConfig()'>
+                clear</button>
+              <button onclick="localStorageH.exportToDownloadableFile();">
+                save as</button>
+              <br>
+              <textarea
+                style="min-height:100px;"
+                >${JSON.stringify(localStorageH.dump(),null,2)}</textarea>` 
+          },
+        ]
+      },
+      {
+        name: '-------------------',
+        text: '--'
+      }
+    ]);
+  }
+
+
   getHtmlAfterLoad = () =>{
     cl(`${this.getName} - getHtmlAfterLoad()`);
-    setTimeout(()=>{
-      setOpts.methods.openPanel();
-      
-    },1500);
+    setTimeout(()=>{ this.reopenPanelWithConfig(); },1500);
     
   }
 

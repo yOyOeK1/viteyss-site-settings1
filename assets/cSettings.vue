@@ -49,6 +49,14 @@
                             <br>current values: [<small>{{ field.value }}</small>]
                         </div>
 
+                         <div v-show="field.inputText">
+                            <input type="text" 
+                                v-model="field.value" 
+                                @change="field.callBackF($event, field.value)"
+                                />                           
+
+                        </div>
+
                         <div v-show="field.range">
                             <input type="range" 
                                 v-model="field.value" 
@@ -220,7 +228,6 @@ export default{
 
 .cSetSheh3html{
     font-size: 75%;
-    position: absolute;
     overflow-y: hidden;
     overflow-x: hidden;
     min-height: 30px;
