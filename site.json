@@ -6,6 +6,7 @@
     "asVite": true,
     "asPlugin": true,
     "jssrc":["c_vys_settings1_Page.js"],
+    "modsrc":["m_settings1.js"],
     "enable": true,
     "author": "Bartłomiej Ceglik <yoyoek@wp.pl>",
     "ver": "0.0.1",

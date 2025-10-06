@@ -8,5 +8,8 @@
   },
   "author": "Bartłomiej Ceglik <yoyoek@wp.pl>",
   "license": "MIT",
-  "description": "To make settings easy."
+  "description": "To make settings easy.",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
 }

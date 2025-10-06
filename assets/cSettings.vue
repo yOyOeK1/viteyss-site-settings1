@@ -2,11 +2,11 @@
     <div v-show="setOpts.isOpen"
         :class="'cSetShe '+(theme==1?'':'cSetSheTheme'+theme)"
         >
-
         <div class="cSSTop">
             <button @click="closePanel()">x</button>
             <small>{{ title }} </small>
         </div>
+        <br><br><br>
 
         conf items: ({{ configs.length }})
         
@@ -42,7 +42,7 @@
                         <div v-show="field.filesList">
                             <textarea v-show="field.filesList"
                                 v-model="field.value"
-                                style="width: 90%;"
+                                style="width: 100%;"
                                 >{{ field.value }}</textarea>
                                 
                                 
@@ -187,14 +187,14 @@ export default{
     background-color: rgb(220, 255, 151);
     min-width: 45vw;
     max-width: 45vw;
-    min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
     
-    position: absolute;
+    position: fixed;
     right:0px;
     top:0px;
 
     
-
     z-index: 999;
 }
 .cSetSheTheme2{
@@ -207,6 +207,7 @@ export default{
     color: white;
     padding-left: 5px;
     width:100%;
+    position: fixed;
 }
 
 .cSetSheh3{

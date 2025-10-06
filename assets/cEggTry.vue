@@ -266,9 +266,9 @@ export default{
     border-right: 1px solid rgb(38, 36, 36);
     background-color: #ffffff66;
     min-width: 33vw;
-    min-height: 10vh;
+    min-height: 15px;
 
-    position: absolute;
+    position: fixed;
     left:0px;
     bottom:-8px;
 
@@ -279,15 +279,15 @@ export default{
     border-top: 1px solid rgb(38, 36, 36);
     border-left: 1px solid rgb(38, 36, 36);
     min-width: 33vw;
-    min-height: 10vh;
+    min-height: 15px;
     background-color: #ffaaaa66;
     
-    position: absolute;
+    position: fixed;
     
     right:0px;
     bottom:-8px;
     
-    z-index: 999;
+    z-index: 1999;
 }
 .cSSTop{
     border-bottom: 3px solid red;

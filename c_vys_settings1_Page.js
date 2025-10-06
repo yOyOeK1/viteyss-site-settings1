@@ -3,11 +3,18 @@ import { createApp,ref,watch } from 'vue';
 import CSettings from './assets/cSettings.vue';
 import CEggTry from './assets/cEggTry.vue';
 import { getStats, localStorageH } from './libs/localDb';
+import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
+import CBackupsInfo from './assets/cBackupsInfo.vue';
 
-class s_vyssettings1Page{
+class s_vyssettings1Page extends hotHelperClient{
 
   constructor(){
+    super();
+    this.hotKey = 'settings1';    
+    this.hotRegisterOn();
+
     localStorageH['reopenPanelWithConfig'] = this.reopenPanelWithConfig;
+    localStorageH['getBackupsStatsFromServer'] = this.getBackupsStatsFromServer;
     window['localStorageH'] = localStorageH;
     this.updateThisClientIdent();
 
@@ -190,9 +197,9 @@ class s_vyssettings1Page{
       {
         name: 'stoH - localStorage',
         //desc: JSON.stringify(stoH,null,4),
-        fields: [
+        fields: [          
           { name: "Settings", html: `
-              <button onclick='localStorageH.reopenPanelWithConfig()'>
+              <button onclick='localStorageH.reopenPanelWithConfig(); localStorageH.getBackupsStatsFromServer();'>
                 reload</button>
               <button onclick='localStorage.clear();localStorageH.reopenPanelWithConfig()'>
                 clear</button>
@@ -200,9 +207,13 @@ class s_vyssettings1Page{
                 save as</button>
               <br>
               <textarea
-                style="min-height:100px;"
+                style="min-height:100px;width:90%;"
                 >${JSON.stringify(localStorageH.dump(),null,2)}</textarea>` 
           },
+          { name: "Backups info", html: `
+              <button id="setSaveOnSer">
+                save on server</button>
+              <div id="set1BackInfo">looking ....</div>`},
         ]
       },
       {
@@ -210,6 +221,58 @@ class s_vyssettings1Page{
         text: '--'
       }
     ]);
+
+
+    setTimeout(()=>{
+      $('#setSaveOnSer').click(()=>{
+        console.log('save on server !');
+        let toSave = {
+          name: thisClientIdent,
+          settings1Dump: localStorageH.dump()
+        };
+        this.hotTaskStart({topic:'settings1/save',payload:toSave}).then((msg)=>{
+          console.log("Got result of m_settings1 ");
+          if( msg['workDone'] == 'ok' ){
+            $.toast({
+              heading: 'Success',
+              text: 'Settings saved on server in: '+msg['pathF'],
+              //showHideTransition: 'slide',
+              //hideAfter: 800,
+              icon: 'success'
+            });
+          }
+          //cl(msg.list.reverse());
+        }).catch( (err)=>{
+          console.error(' Not able to get task m_settings1 done :(');
+        } );
+
+    })},200);
+
+
+    setTimeout(()=>{
+      console.log('get some stats from settings ......');
+      this.getBackupsStatsFromServer();
+    },700);
+
+  }
+
+  getBackupsStatsFromServer=()=>{
+    this.hotTaskStart({topic:'settings1/getMyStats',payload:{
+        location: localStorageH.getK('device/location'),
+        name: localStorageH.getK('device/name')
+      }}).then((msg)=>{
+          console.log("Got result of m_settings1 / getMyStats ....");
+          if( 'myBackupStatus' in msg ){
+            console.log('myBackupStatus----------------------',
+              msg['myBackupStatus'],
+            '----------------------------------------');
+            createApp( CBackupsInfo, { datap: msg['myBackupStatus']} )
+              .mount( '#set1BackInfo' );
+          }
+          //cl(msg.list.reverse());
+        }).catch( (err)=>{
+          console.error(' Not able to get task m_settings1 done :(');
+        } );
   }
 
 
@@ -226,6 +289,12 @@ class s_vyssettings1Page{
   svgDynoAfterLoad(){
 
   }
+
+  onHotMessageCallBack = ( msg ) =>{
+    cl(`onHot Got!`);cl(msg);
+
+  }
+
 
   onMessageCallBack = ( r ) => {
     cl( `${this.getName} [cb] - got msg `);
