@@ -27,6 +27,21 @@
                     
                 <div v-if="conf['fields']">
                     <div v-for="field in conf['fields']">
+
+                        
+                        <div v-show="field.selectoneoption">
+                            select one 
+                            <select
+                                v-model="field.value"
+                                @change="field.callBackF($event, field.value)"
+                                >
+                                <option v-for="v in field.values"
+                                    :value="v"
+                                    >{{ v }}</option>
+                            </select>
+
+                        </div>
+
                         <div class="cSetSheh4">
                             {{ strFirtLeterLarge(field.name) }}: 
                             <span v-show="field.range">( {{ field.value }} )</span>
@@ -56,6 +71,8 @@
                                 />                           
 
                         </div>
+
+                        
 
                         <div v-show="field.range">
                             <input type="range" 
