@@ -112,7 +112,8 @@ export default{
 
         let setOpts = {
             'isOpen': false, // default state of setting 
-            'methods': this
+            'methods': this,
+            'openPanelWithDiv': this.openPanelWithDiv
 
         };
         window['setOpts'] = setOpts;
@@ -134,6 +135,18 @@ export default{
     methods:{
         strFirtLeterLarge(st){
             return st.charAt(0).toUpperCase() + st.slice(1);
+        },
+       
+        openPanelWithDiv( title, callBack, callBackOnClose = undefined ){
+            let divName = `divSettingsPanel${parseInt(Date.now())}`;
+            this.openPanelWithConfig([
+                {
+                name: title,
+                html: `<div id="${divName}"></div>`
+                }], title, callBackOnClose );
+            setTimeout(()=>{
+                callBack( divName );
+            },10);
         },
         openPanel(){
             this.setOpts.isOpen = true;
@@ -168,11 +181,12 @@ export default{
                     'inset 15px 15px 40px rgba(0, 0, 0, 1.0)',
                     'inset 0px 0px 0px rgba(0, 0, 0, 0.0)'
                 ],
-                duration: 100,        // Animation duration in milliseconds
+                duration: 200,        // Animation duration in milliseconds
                 easing: 'easeInOutQuad' // Easing function for the animation
                 });
             clearInterval( this.myPageCheck );
             this.myPageCheck = -1;
+            //console.log('cSettings - close panel - callbackon clone ', this.callBackOnClose);
             if( this.callBackOnClose != undefined )
                 this.callBackOnClose();
         },
@@ -189,8 +203,9 @@ export default{
                 this.theme = 1;
             }
 
+            if( this.isOpen )
+                this.closePanel();
             this.callBackOnClose = callBackOnClose;
-
             this.openPanel();
         }
     }
@@ -249,6 +264,7 @@ export default{
     overflow-y: hidden;
     overflow-x: hidden;
     min-height: 30px;
+    max-width: 90%;
     background-color: white;
     padding-left: 5px;
 }
