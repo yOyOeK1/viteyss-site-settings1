@@ -35,7 +35,7 @@
 
                     
                     <div v-show="field.value"
-                        @click="eTryClick(field)"
+                        @click="eTryClick($event, field)"
                         :title="field.title ? field.title : field.name" v-html="field.value"class="cEggTrySheh3html"></div>
 
                     <div v-show="field.filesList">
@@ -104,6 +104,8 @@ export default{
 
         return {
             //isOpen: true
+            divObj: null,
+            pos:[0,0],
             setOpts,
             configs: [],
             eggClickAt: -1,
@@ -133,13 +135,52 @@ export default{
             this.eggClickAt = -1;
         },
 
-        eTryClick(field){
-            console.log('click on field name:'+field.name);
-            if( 'onclick' in field && field.onclick == 'settings' && 'settingsOpts' in field ){
-                if( setOpts.isOpen == true ){
-                    setOpts.methods.closePanel();
+        eTryClick(e, field){
+            //console.log('cE click on field name:'+field.name,
+            //    '\n event e: ',e
+            //);
+
+
+            this.pos = [ e.clientX, e.clientY-20 ];
+            
+            let l = setOpts.cSl.getLayer('eggTryContextMenuTest',true, {
+                name:'eggTryContextMenuTest',
+                isTitleVisible: false,
+                makeFloating: true,
+                //pos: [100,100],
+                //byCorner: 'tl',
+                //pos: [100,window.innerHeight -100],
+                //byCorner: 'bl',
+                pos: this.pos,
+                forThisSite:false,
+                size: [200,100], 
+                byCorner: 'br',
+                controls: { 
+                    minMax: true, 
+                    titleBarHide: false,
+                    move: true,
+                    close: true
+                    },
+                style:{
+                    'box-shadow': '10px 10px 30px rgba(0,100,200,200), inset 2px 2px 10px rgba(255,255,255,0.5)',
+                    'background-color': 'rgba(184, 160, 204, 0.6)',
+                    'backdrop-filter': 'sepia(80%) blur(5px)',
+                    '-webkit-backdrop-filter': 'sepia(80%) blur(5px)',
+                    'border': '5px solid #ff89e1',
+                    'border-radius': '10px'
                 }
-                setOpts.methods.openPanelWithConfig( field.settingsOpts, field.name, this.eTryConfigClose );
+                });
+                
+
+            if( 'onclick' in field && field.onclick == 'settings' && 'settingsOpts' in field ){
+                setTimeout(()=>{
+                    console.log('cE - onclick on eggtry ['+field.name+']',
+                        '\nlayer:',l
+                    );
+                    l.app.setLayerPos( this.pos );
+                    l.app.openPanelWithConfig(field.settingsOpts, field.name, this.eTryConfigClose)
+                },100);
+                
                 this.eggClickAt = field.name;
                 
             }

@@ -1,14 +1,67 @@
 <template>
+
+
+
     <div v-show="setOpts.isOpen"
-        :class="'cSetShe '+(theme==1?'':'cSetSheTheme'+theme)"
+        v-ref="divFirstName"
+        :id="'divTopsC'+name"
+        :style="divStyle"
+        :class="'cSet '+(theme==1?'':'cSetSheTheme'+theme)"
         >
-        <div class="cSSTop">
-            <button @click="closePanel()">x</button>
+
+        <div class="cSSTop" v-ref="cSTitleBar"
+            v-if="isTitleVisible">
             <small>{{ title }} </small>
         </div>
-        <br><br><br>
+        
+        <div class="cSlayerButtons">
+            <button 
+                title="Make as floating"
+                v-if="isFloating == false && divControlls.minMax"
+                @click="makeAsFloating()">
+                <i class="fa-solid fa-down-left-and-up-right-to-center"></i></button>
+            <button 
+                title="As right drawer"
+                v-if="isFloating == true && divControlls.minMax"
+                @click="makeAsDrawer()">
+                <i class="fa-solid fa-forward-step"></i></button>
 
-        conf items: ({{ configs.length }})
+            
+            <button 
+                title="Hide title"
+                v-if="isTitleVisible == true && divControlls.titleBarHide"
+                @click="isTitleVisible = false">
+                <i class="fa-solid fa-arrows-up-to-line"></i></button>
+
+            <button 
+                title="Show title"
+                v-if="isTitleVisible == false && divControlls.titleBarHide"
+                @click="isTitleVisible = true">
+                <i class="fa-solid fa-arrows-up-down"></i></button>
+            
+            <button 
+                title="Move it"
+                v-if="isFloating == true && divControlls.move"
+                v-on:mousedown="oMoveIt_nMousedown"
+                v-on:touchdown="oMoveIt_nMousedown" 
+                v-on:touchstart="oMoveIt_nMousedown"            
+                >
+                <i class="fa-solid fa-up-down-left-right"></i></button>
+
+            <button 
+                title="Close it"
+                v-if="divControlls.close"
+                @click="closePanel()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+
+        
+        <div v-if="isTitleVisible">
+            <br>
+            conf items: ({{ configs.length }})
+        </div>
+
+
         
         <div>
 
@@ -105,9 +158,10 @@
 
 </template>
 <script>
+import { ref } from 'vue';
 
 export default{
-    props:[ 'name' ],
+    props:[ 'name', 'opts' ],
     data(){
 
         let setOpts = {
@@ -116,18 +170,52 @@ export default{
             'openPanelWithDiv': this.openPanelWithDiv
 
         };
-        window['setOpts'] = setOpts;
+        if( !( 'setOpts' in window) ){
+            window['setOpts'] = setOpts;
+        }
 
         return {
             //isOpen: true
+            isTitleVisible: true,
+            isFloating: false,
+            draggingNow: false,
+            byCorner: 'tr',
+            divFirstName: ref('cSetFirstDiv'+this.name),
+            divStyle: {
+                'box-shadow': '10px 10px 30px rgba(0, 0, 0, 1.0)',
+                'background-color': 'rgb(220, 255, 151)',
+                //'min-width': '45%',
+                'width': '45%',
+                'height': '100%',
+                'overflow-y': 'auto',
+                'border':'solid 2px gray',            
+                position: 'fixed',
+
+                right: '0px',
+                top: '0px',
+                
+                'z-index': 999
+            },
+            divSize: null,
+            divControlls:{
+                minMax: true, 
+                titleBarHide: true,
+                move: true,
+                close: true
+            },
             title: 'Settings: '+this.name,
             theme: 1,
             setOpts,
             configs: [],
             pageOpenAn: '',
             myPageCheck: -1,
-            callBackOnClose: undefined
+            callBackOnClose: undefined,
+
+            mousePos:[0,0]
         };
+    },
+    mounted(){
+        console.log('cSettings ['+this.name+'] mounted....');
     },
     computed:{
         
@@ -137,6 +225,46 @@ export default{
             return st.charAt(0).toUpperCase() + st.slice(1);
         },
        
+        oMoveIt_nMousedown(e){
+            console.log('cS - mouse down',e);
+            this.draggingNow = true;
+            setOpts.Dragging_start(e,this.oMoveIt_nMousemove, this.oMoveIt_nMouseup);
+
+        },
+        oMoveIt_nMousemove(e){
+            if( this.draggingNow == false ){
+               return 1;
+            } 
+
+            this.setLayerPos(e.cXY);
+
+            //console.log('cS - mouse move',e,);
+            //this.divStyle['right'] = (-e.delta[0]+ parseInt(this.divStyle['right'].substring(0,this.divStyle['right'].length-2)) )+'px';
+            //this.divStyle['top'] = (e.delta[1]+ parseInt(this.divStyle['top'].substring(0,this.divStyle['top'].length-2)) )+'px';
+        },
+        oMoveIt_nMouseup(e){
+            console.log('cS - mouse up');
+            this.draggingNow = false;
+        },
+
+
+        makeAsFloating(){
+            console.log('cS go floating .... \n',this.divFirstName); 
+            //this.divStyle['height'] = '30%';
+            this.isFloating = true;
+            //this.divStyle['border'] = 'solid gray 3px';
+            this.updateDivSize();  
+        },
+
+        makeAsDrawer(){
+            this.divStyle['height'] = '100%';
+            this.divStyle['right'] = '0px';
+            this.divStyle['top'] = '0px';
+            //this.divStyle['border'] = '';
+
+            this.isFloating = false;
+        },
+
         openPanelWithDiv( title, callBack, callBackOnClose = undefined ){
             let divName = `divSettingsPanel${parseInt(Date.now())}`;
             this.openPanelWithConfig([
@@ -148,10 +276,96 @@ export default{
                 callBack( divName );
             },10);
         },
+        
+
+        updateDivSize(){
+            let dFram = $('#divTopsC'+this.name );
+            this.divSize = [ dFram.width(), dFram.height() ];
+            console.log('cS - update div size ', this.divSize);
+        },
+        setDivSize( size ){
+            console.log('cS - set div size ', size);
+            let dFram = $('#divTopsC'+this.name );
+            this.divStyle['width'] = size[0]+'px';
+            this.divStyle['height'] = size[1]+'px';
+            //dFram.width( size[0]+'px' );
+            //dFram.height( size[1]+'px' );
+            
+        },
+
+        setLayerPos( pos ){
+            let wSize = [ window.innerWidth, window.innerHeight ];
+            let lPos = [ parseInt( this.divStyle['right'].replace('px','') ), parseInt( this.divStyle['top'].replace('px','') ) ];
+            
+            this.updateDivSize();
+
+            if( this.byCorner == 'tr' ){
+                this.divStyle['right'] = wSize[0]-pos[0]+'px';
+                this.divStyle['top'] = pos[1]+'px';
+                
+            }else if( this.byCorner == 'tl' ){
+                this.divStyle['right'] = wSize[0]-pos[0]-this.divSize[0]+'px';
+                this.divStyle['top'] = pos[1]+'px';
+                
+            }else if( this.byCorner == 'bl' ){
+                this.divStyle['right'] = wSize[0]-pos[0]-this.divSize[0]+'px';
+                this.divStyle['top'] = -this.divSize[1]+pos[1]+'px';
+            
+            }else if( this.byCorner == 'br' ){
+                this.divStyle['right'] = wSize[0]-pos[0]+'px';
+                this.divStyle['top'] = -this.divSize[1]+pos[1]+'px';
+            
+            }else{
+                console.error('EE cS set layer pos by corren NaN ',this.byCorner);
+                console.log('cS set layer pos by corner: ['+this.byCorner+']',
+                    '\n POS:        ', pos, 
+                    '\n   lPos:     ', lPos,
+                    '\n   divSize:    ', this.divSize,
+                    '\n   wSize:    ', wSize,
+                );
+            }
+            
+            //console.log('cS set layer pos Final',
+            //'\nright , top : '+this.divStyle['right']+ ' , '+this.divStyle['top'] );
+
+
+        },
+
+
         openPanel(){
-            this.setOpts.isOpen = true;
+            
+
+            if( 'style' in this.opts ){
+                Object.keys( this.opts.style )
+                    .forEach( k => this.divStyle[ k ] = this.opts.style[ k ] );
+            }
+           
+
+            if( 'byCorner' in this.opts )
+                this.byCorner = this.opts.byCorner;
+            if( 'isTitleVisible' in this.opts )
+                this.isTitleVisible = this.opts.isTitleVisible;
+            if( 'size' in this.opts )
+                this.setDivSize( this.opts.size );
+            if( 'controls' in this.opts ){
+                Object.keys( this.opts.controls )
+                    .forEach( k => this.divControlls[ k ] = this.opts.controls[ k ] );
+            }
+            
+            if( 'makeFloating' in this.opts && this.opts.makeFloating == true ){
+                this.makeAsFloating();
+                 if( 'pos' in this.opts ){
+                    console.log('   - cS panel / layer [makeFloating]\n',
+                        '   - pos [',this.opts,']' );
+
+                    setTimeout(()=>{
+                        this.setLayerPos( this.opts.pos );
+                    },10);
+                }
+            }
 
             //$('#mainPage').css('box-shadow', 'inset 5px 5px 50px rgba(0, 0, 0, 0.8)');
+            /*
             aajs.animate('#mainPage',{
                 'box-shadow': [
                     'inset 0px 0px 0px rgba(0, 0, 0, 0.0)',
@@ -160,8 +374,11 @@ export default{
                 duration: 100,        // Animation duration in milliseconds
                 easing: 'easeInOutQuad' // Easing function for the animation
                 });
+            */
 
-
+            if( 'forThisSite' in this.opts && this.opts.forThisSite == false ){
+                this.myPageCheck = 'dontWant';
+            }
             this.pageOpenAn = parseInt( pager.currentPage );
             if( this.myPageCheck == -1 ){
                 this.myPageCheck = setInterval(()=>{
@@ -172,10 +389,14 @@ export default{
                     }
                 },1000);
             }
+
+            this.setOpts.isOpen = true;
+
         },
         closePanel(){
             this.setOpts.isOpen = false;
             //$('#mainPage').css('box-shadow','');
+            /*
             aajs.animate('#mainPage',{
                 'box-shadow': [
                     'inset 15px 15px 40px rgba(0, 0, 0, 1.0)',
@@ -184,8 +405,11 @@ export default{
                 duration: 200,        // Animation duration in milliseconds
                 easing: 'easeInOutQuad' // Easing function for the animation
                 });
-            clearInterval( this.myPageCheck );
-            this.myPageCheck = -1;
+                */
+            if( this.myPageCheck != 'dontWant' ){
+                clearInterval( this.myPageCheck );
+                this.myPageCheck = -1;
+            }
             //console.log('cSettings - close panel - callbackon clone ', this.callBackOnClose);
             if( this.callBackOnClose != undefined )
                 this.callBackOnClose();
@@ -205,6 +429,7 @@ export default{
 
             if( this.isOpen )
                 this.closePanel();
+
             this.callBackOnClose = callBackOnClose;
             this.openPanel();
         }
@@ -214,31 +439,36 @@ export default{
 </script>
 
 <style>
-.cSetShe{
-    box-shadow: 10px 10px 30px rgba(0, 0, 0, 1.0);
-    background-color: rgb(220, 255, 151);
-    min-width: 45vw;
-    max-width: 45vw;
-    height: 100vh;
-    overflow-y: auto;
-    
-    position: fixed;
-    right:0px;
-    top:0px;
 
-    
-    z-index: 999;
+.cSet button{
+    padding:3px;
 }
+
+.cSlayerButtons{
+    position: sticky;
+    right: 0px;
+    top: 0px;
+    text-align: right;
+}
+.cSlayerButtons button{
+
+    background-color: greenyellow;
+    color: black;
+    border-radius: 3px;
+    margin: 1px;
+    border: 1px solid rgb(193, 123, 180);
+}
+
 .cSetSheTheme2{
     background-color: rgb(197, 181, 218);
 }
 
 .cSSTop{
-    border-bottom: 3px solid red;
+    border-bottom: 1px solid rgb(193, 123, 180);
     background-color: rgb(38, 36, 36);
-    color: white;
-    padding-left: 5px;
-    width:100%;
+    color: white;    
+    min-width: 45%;
+    max-width:45%;
     position: fixed;
 }
 
