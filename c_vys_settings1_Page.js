@@ -5,6 +5,30 @@ import CEggTry from './assets/cEggTry.vue';
 import { getStats, localStorageH } from './libs/localDb';
 import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
 import CBackupsInfo from './assets/cBackupsInfo.vue';
+import iFs from 'indexeddb-fs';
+
+
+async function testIfs() {
+  // Check if a directory exists
+  const directoryExists = await iFs.isDirectory('my_directory');
+
+  // Create a new directory if it doesn't exist
+  if (!directoryExists) {
+    await iFs.createDirectory('my_directory');
+  }
+
+  // Write data to a file
+  const content = 'Hello, world!';
+  await iFs.writeFile('my_directory/my_file.txt', content);
+
+  // Read data from the file
+  const readContent = await iFs.readFile('my_directory/my_file.txt');
+  console.log(readContent); // "Hello, world!"
+
+  // Remove the directory and all files within it
+  await iFs.removeDirectory('my_directory');
+}
+
 
 
 
@@ -15,6 +39,10 @@ class cSLayers{
     this._layers = [];
 
     this.install_setOpts();
+    setTimeout(()=>testIfs(),100);
+    
+    window['iFs'] = iFs;
+       
   }
 
   getStatusOfLayers=()=>{
@@ -191,6 +219,7 @@ class s_vyssettings1Page extends hotHelperClient{
 
   drag_onmove = (e )=>{
     let cXY = [0,0];
+    let deb = false;
     if( this.dragEventType == 'mousemove' )
       cXY = [ e.clientX, e.clientY ];
     else{
@@ -199,10 +228,12 @@ class s_vyssettings1Page extends hotHelperClient{
     }
 
     let wSize = [ window.innerWidth, window.innerHeight ];
-    console.log('on -> '+this.dragEventType,'   ',Date.now(),
-    '\n cXY:',cXY, ' window size: ',wSize,
-    '\ne:\n',e);
-    let trStr = `<br><br>client XY: [${cXY}]`;
+    if( deb ) {
+      console.log('on -> '+this.dragEventType,'   ',Date.now(),
+        '\n cXY:',cXY, ' window size: ',wSize,
+        '\ne:\n',e);
+      let trStr = `<br><br>client XY: [${cXY}]`;
+    }
 
     /*
     if( cXY[0] < 40 ) cXY[0] = 40;
@@ -220,7 +251,10 @@ class s_vyssettings1Page extends hotHelperClient{
     ] ;
     this.dragPointLast = cXY;
     
-    trStr+=`<br>delta: [${delta}]`
+    if( deb ) {
+      trStr+=`<br>delta: [${delta}]`;
+      console.log('drag onmove -  debug res: ',trStr);
+    }
     //this.dragDiv.html(trStr);
 
    
@@ -228,6 +262,8 @@ class s_vyssettings1Page extends hotHelperClient{
   }
 
   Dragging_start=( e = {clientX:0, clientY:0}, callBackOnMove = undefined, callBackOnEnd = undefined )=>{
+    
+    
     console.log('Dragging ...... START\n',e);
     this.isDragging = true;
     this.dragPoint = [0,0];

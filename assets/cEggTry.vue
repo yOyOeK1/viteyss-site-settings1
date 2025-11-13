@@ -1,6 +1,6 @@
 <template>
 
-    <div v-show="setOpts.isOpen"
+    <div v-if="setOpts.isOpen"
         class="cEggTryHist"
         >
         <table>
@@ -84,8 +84,6 @@
 
 </template>
 <script>
-
-import { watch,ref } from 'vue';
 
 
 export default{

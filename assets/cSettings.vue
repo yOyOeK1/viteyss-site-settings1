@@ -1,8 +1,8 @@
-<template>
+<template >
 
 
 
-    <div v-show="setOpts.isOpen"
+    <div v-if="configs!=[] && setOpts.isOpen"
         v-ref="divFirstName"
         :id="'divTopsC'+name"
         :style="divStyle"
@@ -70,7 +70,7 @@
                 
                 <div class="cSetSheh3">{{ strFirtLeterLarge(conf.name) }}</div>
 
-                <div v-show="conf.icon"><img :src="conf.icon" /></div>
+                <div v-if="conf.icon"><img :src="conf.icon" /></div>
                 
                 <div v-show="conf.desc" 
                     class="cSetSheh3desc">{{ conf.desc }}</div>
@@ -95,9 +95,10 @@
 
                         </div>
 
+
                         <div class="cSetSheh4">
-                            {{ strFirtLeterLarge(field.name) }}: 
-                            <span v-show="field.range">( {{ field.value }} )</span>
+                            {{ 'name' in field ? strFirtLeterLarge( field.name ) : '' }}: 
+                            <span v-if="field.range">( {{ field.value }} )</span>
                         </div>
 
                         <div v-show="field.text">{{ field.text }}</div>
@@ -181,6 +182,7 @@ export default{
             draggingNow: false,
             byCorner: 'tr',
             divFirstName: ref('cSetFirstDiv'+this.name),
+            cSTitleBar: null,
             divStyle: {
                 'box-shadow': '10px 10px 30px rgba(0, 0, 0, 1.0)',
                 'background-color': 'rgb(220, 255, 151)',
@@ -211,7 +213,9 @@ export default{
             myPageCheck: -1,
             callBackOnClose: undefined,
 
-            mousePos:[0,0]
+            mousePos:[0,0],
+
+            
         };
     },
     mounted(){
@@ -222,6 +226,7 @@ export default{
     },
     methods:{
         strFirtLeterLarge(st){
+            console.log('st ',st);
             return st.charAt(0).toUpperCase() + st.slice(1);
         },
        

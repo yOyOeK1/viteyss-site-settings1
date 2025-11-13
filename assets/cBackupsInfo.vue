@@ -1,8 +1,8 @@
 <template>
     made {{ dcount }} last: {{ niceData }}
-    <i v-show="!showIt" 
+    <i v-if="!showIt" 
         @click="showIt=!showIt" class="fa-solid fa-circle-info" title="show details"></i>
-    <i v-show="showIt" 
+    <i v-else 
         @click="showIt=!showIt" class="fa-solid fa-circle-xmark"></i>
     
     <br>
