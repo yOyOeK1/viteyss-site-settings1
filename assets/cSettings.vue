@@ -3,13 +3,13 @@
 
 
     <div v-if="configs!=[] && setOpts.isOpen"
-        v-ref="divFirstName"
+        ref="divFirstName"
         :id="'divTopsC'+name"
         :style="divStyle"
         :class="'cSet '+(theme==1?'':'cSetSheTheme'+theme)"
         >
 
-        <div class="cSSTop" v-ref="cSTitleBar"
+        <div class="cSSTop" ref="cSTitleBar"
             v-if="isTitleVisible">
             <small>{{ title }} </small>
         </div>

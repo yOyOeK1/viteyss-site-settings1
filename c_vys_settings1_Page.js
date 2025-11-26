@@ -6,6 +6,7 @@ import { getStats, localStorageH } from './libs/localDb';
 import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
 import CBackupsInfo from './assets/cBackupsInfo.vue';
 import iFs from 'indexeddb-fs';
+import { downloadStringAsFile } from "./libs/strToFile.js";
 
 
 async function testIfs() {
@@ -39,9 +40,10 @@ class cSLayers{
     this._layers = [];
 
     this.install_setOpts();
-    setTimeout(()=>testIfs(),100);
+    //setTimeout(()=>testIfs(),100);
     
     window['iFs'] = iFs;
+    window['downloadStringAsFile'] = downloadStringAsFile;
        
   }
 
