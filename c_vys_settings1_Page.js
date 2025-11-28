@@ -68,8 +68,14 @@ class cSLayers{
   onFileDialog= ( action = 'debug', opts = {} ) =>{
 
     let opt = { operation: action };
+
+    if( typeof opts != 'string' )
+      for( let k of Object.keys(opts) )
+        opt[k] = opts[k];
+
     if( action == 'save' ) opt['data'] = opts;
     else if( action == 'load' ) opt['data'] = '';
+   
 
     setTimeout(()=>{
         let filDiaVue = createApp( NstiFs, opt );

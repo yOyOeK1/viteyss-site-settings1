@@ -86,6 +86,13 @@
     </div>
 
 
+    <div v-if="onDone != undefined">
+        Load selection !  .... 
+        <button 
+            @click="onDoneClick()">Ok load</button>
+    </div>
+
+
 </template>
 
 <script>
@@ -94,14 +101,16 @@
 //import { a as testa2} from '@viteyss-site-settings1/libs/test.js'
 
 export default{
-    props:['operation', 'data'],
+    props:['operation', 'data', 'onDone' ],
     data(){
+        
         return {
             dirName: 'nst',
             fileName: timestampToNiceTime_DomSafe()+'.js',
             filesInDir: -1,
             dirContentFiles:['loading ...'],
             dirContentDirs:['loading ...'],
+            
 
             dataTo: this.data!=null? this.data:`erties [html@local]#[dDivSvg] of node
 nstTimeLine.vue:745
@@ -135,6 +144,11 @@ observer START for [html@local]`,
         this.readDirectory();
     },
     methods:{
+
+        onDoneClick(){
+            this.onDone( String( this.dataTo ) );
+            
+        },
 
         onMkNewDir(){
             let sign = prompt("Name of new directory");
