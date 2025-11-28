@@ -11,5 +11,8 @@
   "description": "To make settings easy.",
   "dependencies": {
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "indexeddb-fs": "^2.1.5"
   }
 }

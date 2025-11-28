@@ -7,6 +7,7 @@ import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
 import CBackupsInfo from './assets/cBackupsInfo.vue';
 import iFs from 'indexeddb-fs';
 import { downloadStringAsFile } from "./libs/strToFile.js";
+import NstiFs from './assets/nstiFs.vue';
 
 
 async function testIfs() {
@@ -62,6 +63,51 @@ class cSLayers{
     this._layers.forEach( l => l.app.closePanel() );
   }
 
+
+
+  onFileDialog= ( action = 'debug', opts = {} ) =>{
+
+    let opt = { operation: action };
+    if( action == 'save' ) opt['data'] = opts;
+    else if( action == 'load' ) opt['data'] = '';
+
+    setTimeout(()=>{
+        let filDiaVue = createApp( NstiFs, opt );
+        let fd = this.getLayer('FileDialog',true, {
+          name:'FileDialog',
+          isTitleVisible: true,
+          makeFloating: true,
+          //pos: [100,100],
+          //byCorner: 'tl',
+          //pos: [100,window.innerHeight -100],
+          //byCorner: 'bl',
+          pos: [10, 10],
+          size: [window.innerWidth - 30, window.innerHeight - 70], 
+          byCorner: 'tl',
+          controls: { 
+              minMax: false, 
+              titleBarHide: false,
+              move: true,
+              close: true
+             }       
+          });
+        fd.app.openPanelWithConfig([
+          {
+            name: 'File dialog - ['+action+']',
+            html: `<div id="cSAndFileDialogLayer">yes</div>`
+          }], 'For file dialog');
+
+
+        setTimeout(()=>{
+          filDiaVue.mount('#cSAndFileDialogLayer');
+        },200);
+
+      },500);
+
+
+  }
+
+
   install_setOpts = () => {
     let setIIns = setInterval(()=>{
       if( !('setOpts' in window ) ){
@@ -70,6 +116,7 @@ class cSLayers{
         setOpts['cSl'] = this;
         setOpts['closeLayers'] = this.closeLayers;
         setOpts['getStatusOfLayers'] = this.getStatusOfLayers;
+        setOpts['FileDialog'] = this.onFileDialog;
         console.log('cSettings layer installed  ..... DONE');
         clearInterval( setIIns );
       }
@@ -392,6 +439,9 @@ class s_vyssettings1Page extends hotHelperClient{
   
   getHtml = () => {
 
+
+    setTimeout(()=>setOpts.FileDialog('debug'),200);
+
     return `<b>${this.getName}</b><br>
     <img src="${this.homeUrl}assets/ico_viteyss_32.png"><br>
     This is a npm package<br>
@@ -405,6 +455,9 @@ class s_vyssettings1Page extends hotHelperClient{
     </pre>
     <button onclick="setOpts.methods.openPanel()">settings</button>
     <button onclick="setOpts.Dragging_start()">Dragging start</button>
+    <button onclick="setOpts.FileDialog('debug')">File Dialog (debug)</button>
+    <button onclick="setOpts.FileDialog('save','abc')">File Dialog (save)</button>
+    <button onclick="setOpts.FileDialog('load')">File Dialog (load)</button>
     
     `;
 
