@@ -114,6 +114,44 @@ class cSLayers{
   }
 
 
+
+  openAsContextMenu = ( divAnchor ) => {
+
+    let oDiv = $('#'+divAnchor);
+    let posIs = [ 
+        parseInt(oDiv.css('left').replaceAll('px',''))+10, 
+        parseInt(oDiv.css('top').replaceAll('px','')) +10 
+      ];
+    console.log('asCon ',oDiv.css('left'),oDiv.css('top'));
+    let l = this.getLayer('asContext'+divAnchor,true, {
+      name:'asContext'+divAnchor,
+      isTitleVisible: false,
+      makeFloating: true,
+      //pos: [100,100],
+      //byCorner: 'tl',
+      //pos: [100,window.innerHeight -100],
+      //byCorner: 'bl',
+      pos: posIs,
+      size: [150,120], 
+      byCorner: 'tl',
+      controls: { 
+          minMax: false, 
+          titleBarHide: false,
+          move: false,
+          close: false
+          }       
+      });
+    l.app.openPanelWithConfig([
+      {
+        name: 'As Context for '+divAnchor,
+        html: `--- `
+      }], 'For mobile 876');
+    setTimeout(()=> l.app.setLayerPos( posIs ), 100 );
+    
+    return l;
+  }
+
+
   install_setOpts = () => {
     let setIIns = setInterval(()=>{
       if( !('setOpts' in window ) ){
@@ -123,6 +161,7 @@ class cSLayers{
         setOpts['closeLayers'] = this.closeLayers;
         setOpts['getStatusOfLayers'] = this.getStatusOfLayers;
         setOpts['FileDialog'] = this.onFileDialog;
+        setOpts['openAsContextMenu'] = this.openAsContextMenu;
         console.log('cSettings layer installed  ..... DONE');
         clearInterval( setIIns );
       }
