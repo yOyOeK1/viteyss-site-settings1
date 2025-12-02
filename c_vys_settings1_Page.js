@@ -8,6 +8,7 @@ import CBackupsInfo from './assets/cBackupsInfo.vue';
 import iFs from 'indexeddb-fs';
 import { downloadStringAsFile } from "./libs/strToFile.js";
 import NstiFs from './assets/nstiFs.vue';
+import WWorker1 from './assets/wWoker1.vue';
 
 
 async function testIfs() {
@@ -67,6 +68,7 @@ class cSLayers{
 
   onFileDialog= ( action = 'debug', opts = {} ) =>{
 
+    let fd = null;
     let opt = { operation: action };
 
     if( typeof opts != 'string' )
@@ -77,9 +79,9 @@ class cSLayers{
     else if( action == 'load' ) opt['data'] = '';
    
 
-    setTimeout(()=>{
+    //setTimeout(()=>{
         let filDiaVue = createApp( NstiFs, opt );
-        let fd = this.getLayer('FileDialog',true, {
+        fd = this.getLayer('FileDialog',true, {
           name:'FileDialog',
           isTitleVisible: true,
           makeFloating: true,
@@ -108,9 +110,9 @@ class cSLayers{
           filDiaVue.mount('#cSAndFileDialogLayer');
         },200);
 
-      },500);
+      //},10);
 
-
+    return fd;
   }
 
 
@@ -244,6 +246,8 @@ class s_vyssettings1Page extends hotHelperClient{
 
 
     this.set1App = -1;
+
+    this.wWork = -1;
     
     this.egg1App = createApp( CEggTry, {
       name:'eggtry1'
@@ -484,8 +488,9 @@ class s_vyssettings1Page extends hotHelperClient{
   
   getHtml = () => {
 
+    this.wWork = createApp( WWorker1 );
 
-    setTimeout(()=>setOpts.FileDialog('debug'),200);
+    //setTimeout(()=>setOpts.FileDialog('debug'),200);
 
     return `<b>${this.getName}</b><br>
     <img src="${this.homeUrl}assets/ico_viteyss_32.png"><br>
@@ -504,6 +509,9 @@ class s_vyssettings1Page extends hotHelperClient{
     <button onclick="setOpts.FileDialog('save','abc')">File Dialog (save)</button>
     <button onclick="setOpts.FileDialog('load')">File Dialog (load)</button>
     
+
+    <hr>
+    <div id="wWor" />
     `;
 
   }
@@ -694,6 +702,7 @@ class s_vyssettings1Page extends hotHelperClient{
     cl(`${this.getName} - getHtmlAfterLoad()`);
     setTimeout(()=>{ this.reopenPanelWithConfig(); },1500);
     
+    this.wWork.mount('#wWor');
   }
 
   get svgDyno(){
