@@ -8,7 +8,7 @@ import CBackupsInfo from './assets/cBackupsInfo.vue';
 import iFs from 'indexeddb-fs';
 import { downloadStringAsFile } from "./libs/strToFile.js";
 import NstiFs from './assets/nstiFs.vue';
-import WWorker1 from './assets/wWoker1.vue';
+import WWorkerLF from './assets/wWokerLocalFile.vue';
 
 
 async function testIfs() {
@@ -488,7 +488,11 @@ class s_vyssettings1Page extends hotHelperClient{
   
   getHtml = () => {
 
-    this.wWork = createApp( WWorker1 );
+    this.wWork = createApp( WWorkerLF, { 
+      'homeUrl': this.homeUrl,
+      'multi': true,
+      onDone: (r)=>{ console.log('load DONE',r);}
+    } );
 
     //setTimeout(()=>setOpts.FileDialog('debug'),200);
 
