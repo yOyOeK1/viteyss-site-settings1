@@ -3,6 +3,7 @@
 
     <div>
         <label for="file-upload" class="button-style-label">
+            <i class="fa-solid fa-file-arrow-down"></i>
             Select file
         </label>
         <input 
@@ -30,10 +31,10 @@
 <style scoped>
 .button-style-label {
   display: inline-block;
-  padding: 2px 10px;
-  background-color: #ffdd00;
-  color: rgb(0, 0, 0);
-  border-radius: 8%;
+  padding: 4px 4px;
+  background-color: #25241b;
+  color: rgb(255, 255, 255);
+  border-radius: 5px;
   border-color: black;
   border: 1px solid transparent;
   cursor: pointer;
