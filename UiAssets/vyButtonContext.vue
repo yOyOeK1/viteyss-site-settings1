@@ -20,7 +20,7 @@
                 width:100%;height:100%;
                 position:fixed;top:0px;left:0px;
                 z-index: 19;"
-            @mouseover="$emit( 'update:isShowing', false )"                    
+            @mouseover="$emit( 'update:is-showing', false )"                    
             >
 
         
@@ -77,7 +77,7 @@ props:{
     'btShowHide': { type: Boolean, default: true },
     
 },
-emits: [ 'update:isShowing' ],
+emits: [ 'update:is-showing' ],
 data(){
     return { 
         //isShowing:false,

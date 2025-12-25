@@ -1,14 +1,17 @@
 
-import { createApp,ref,watch } from 'vue';
+import { createApp,ref,watch,toRaw } from 'vue';
 import CSettings from './assets/cSettings.vue';
 import CEggTry from './assets/cEggTry.vue';
 import { getStats, localStorageH } from './libs/localDb';
-import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
+//import { hotHelperClient } from '/libs/hotHelper.js'; // TODO FIX
+import { hotHelperClient } from '/libs/hotHelper.js'; // test 1
 import CBackupsInfo from './assets/cBackupsInfo.vue';
 import iFs from 'indexeddb-fs';
 import { downloadStringAsFile } from "./libs/strToFile.js";
 import NstiFs from './assets/nstiFs.vue';
 import WWorkerLF from './assets/wWokerLocalFile.vue';
+import { mkTrashHold } from './libs/mkTrashHold.js';
+
 
 
 async function testIfs() {
@@ -36,6 +39,62 @@ async function testIfs() {
 
 
 
+function installToWindow(){
+
+
+  window['iFs'] = iFs;
+  window['downloadStringAsFile'] = downloadStringAsFile;
+
+
+  console.log(`-------------------------
+      inject window.mkTrashHold ---------------`);
+  window['mkTrashHold'] = mkTrashHold;
+
+
+
+  console.log(`-------------------------
+  * inject JSON.clone 
+  * inject JSON.cloneRaw
+  * inject JSON.rawDump
+  * inject JSON.rawDumpNice
+  * inject JSON.findByKey
+    ---------------------------------`);
+
+  JSON.clone = ( j ) => {
+    return JSON.parse( JSON.stringify( j ) );
+  };
+  JSON.cloneRaw = ( j ) => {
+    return JSON.clone( toRaw( j ) );
+  };
+  JSON.dumpNice = ( j ) => {
+    return JSON.stringify( j,null,4 );
+  };
+  JSON.rawDump = ( j ) => {
+    return JSON.stringify( toRaw ( j ) );
+  };
+  JSON.rawDumpNice = ( j ) => {
+    return JSON.stringify( toRaw ( j ),null,4 );
+  };
+  JSON.findByKey = ( jIn, keyName, valLook ) =>{
+    for( let ji of jIn ){
+      if( ji[ keyName ] == valLook )
+        return ji;
+    }
+    return -1;
+  };
+
+}
+
+
+
+
+
+
+
+
+
+
+
 class cSLayers{
 
   constructor(){
@@ -44,8 +103,9 @@ class cSLayers{
     this.install_setOpts();
     //setTimeout(()=>testIfs(),100);
     
-    window['iFs'] = iFs;
-    window['downloadStringAsFile'] = downloadStringAsFile;
+    installToWindow();
+
+    
        
   }
 

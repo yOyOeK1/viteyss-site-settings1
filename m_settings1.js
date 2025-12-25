@@ -1,7 +1,9 @@
 
-console.log("m_wiki.js included ....");
+console.log("m_wiki.js included .... ");
 
-import { hotHelperServer } from "/home/yoyo/Apps/viteyss/libs/hotHelper.js"; // TODO FIX
+//import { hotHelperServer } from "/home/yoyo/Apps/viteyss/libs/hotHelper.js"; // TODO FIX
+import { hotHelperServer } from './libs/hotHelper.js'; // test 1
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -12,12 +14,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 
+
+console.log('settings1 pDir investigation ... ',process.cwd(),{__dirname, __filename});
+
 class m_settings1 extends hotHelperServer{
     constructor( ws ){
         super(ws);
-        this.pDir = '/home/yoyo/Apps/viteyss-site-settings1/userSettings';
-        this.dbFile = '/home/yoyo/Apps/viteyss-site-settings1/db_userSettings_test1.sqlite';
-        this.cl("m_settings init ...");
+        //this.pDir = '/home/yoyo/Apps/viteyss-site-settings1/userSettings';
+        this.pDir = `${__dirname}/userSettings`;
+        //this.dbFile = '/home/yoyo/Apps/viteyss-site-settings1/db_userSettings_test1.sqlite';
+        this.dbFile = `${__dirname}/db_userSettings_test1.sqlite`;
+        this.cl("m_settings init ... pDir: ",this.pDir, '\n dbFile:',this.dbFile);
         this.server = -1;
         this.wskey = 'settings1';
         this.sqH = new sqlHelp( this.dbFile );
