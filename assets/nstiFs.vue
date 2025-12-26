@@ -103,18 +103,32 @@ import { toRaw } from 'vue';
 //import { a as testa2} from '@viteyss-site-settings1/libs/test.js'
 
 export default{
-    props:['operation', 'data', 'onDone' ],
+    props:['operation', 'data', 'ext', 'onDone' ],
     data(){
         
+
+        let extTo = '.js';
+        let dataTo = '';
+        let onSave = undefined;
+        if( typeof this.data != 'string' ){
+            console.log('nstiFs:debug -> dataTo and type:['+(typeof this.data)+'] data:',this.data);
+            
+            if( 'data' in this.data ) dataTo = this.data['data'];
+            if( 'ext' in this.data ) extTo = this.data['ext'];
+            if( 'onSave' in this.data ) onSave = this.data['onSave'];
+            
+        }else
+            dataTo = this.data;
+
+
         return {
             dirName: 'nst',
-            fileName: timestampToNiceTime_DomSafe()+'.js',
+            fileName: timestampToNiceTime_DomSafe()+extTo,
             filesInDir: -1,
             dirContentFiles:['loading ...'],
             dirContentDirs:['loading ...'],
-            
-
-            dataTo: this.data!=null? this.data:`erties [html@local]#[dDivSvg] of node
+            onSave,
+            dataTo: dataTo/*this.data!=null? this.data:`erties [html@local]#[dDivSvg] of node
 nstTimeLine.vue:745
  make selected node by name : #dDivSvg 
 props: (1) ['left'] 
@@ -124,7 +138,7 @@ div find name ....dDivSvg  have (1)
 nstTimeLine.vue:654
  get properties [html@local]#[dDivSvg] of node
 nstTimeLine.vue:745
-observer START for [html@local]`,
+observer START for [html@local]`*/,
         };
     },
     computed:{
@@ -261,10 +275,12 @@ observer START for [html@local]`,
             //navigator.clipboard.writeText( this.dataTo );
             toClipoard( this.dataTo );
             $.toast('In clipboard: '+`${this.dataTo.length} characters`);
+            if( this.onSave ) this.onSave( 'to clipboard' );
         },
         
         saveTo_SaveAs(){
             downloadStringAsFile( this.dataTo, this.fileName, 'application/javascript' );
+            if( this.onSave ) this.onSave( 'save as' );
         },
         
         async saveTo_iFs(){
@@ -290,6 +306,7 @@ observer START for [html@local]`,
                 (fileExists ? 'Overrited<br>':'New<br>')+
                 '<small>Adress:</small> '+path
             );
+            if( this.onSave ) this.onSave( 'to iFs' );
 
 
             this.readDirectory();
