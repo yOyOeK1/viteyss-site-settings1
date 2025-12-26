@@ -96,6 +96,8 @@
 </template>
 
 <script>
+
+import { toRaw } from 'vue';
 //import { a as testa} from '@/test.js'
 
 //import { a as testa2} from '@viteyss-site-settings1/libs/test.js'
@@ -226,7 +228,38 @@ observer START for [html@local]`,
         },
 
         saveTo_clipboard(){
-            navigator.clipboard.writeText( this.dataTo );
+
+
+            function toClipoard(text) {
+                console.log('toClipboard',text)
+
+                if ("clipboard" in navigator && typeof navigator.clipboard.writeText === "function") {
+                    // Chrome
+                    return navigator.clipboard.writeText(text)
+                    .then(() => true)
+                    .catch(() => false);
+                } else {
+                    // Firefox
+                    const input = document.createElement("textarea");
+                    input.value = text;
+                    input.style.position = "fixed";
+                    input.style.top = "20px";
+                    document.body.appendChild(input);
+                    input.select();
+                    try {
+                    return Promise.resolve(document.execCommand("copy"))
+                        .then(res => {
+                        document.body.removeChild(input);
+                        return res;
+                        });
+                    } catch (err) {
+                    return Promise.resolve(false);
+                    }
+                }
+            }
+
+            //navigator.clipboard.writeText( this.dataTo );
+            toClipoard( this.dataTo );
             $.toast('In clipboard: '+`${this.dataTo.length} characters`);
         },
         
