@@ -1,5 +1,8 @@
 import sqlite3 from 'sqlite3';
 
+let debug = 'viteyssDebug' in process.env ? (process.env.viteyssDebug=='true'?true:false) : false;
+
+
 class sqlHelp{
 
     constructor( fPath ){
@@ -41,7 +44,7 @@ class sqlHelp{
             LIMIT 1;
             `,[location,device],(e,d)=>{
                 if( this.hErr(e) ){
-                    console.log('god d:[',d,']');
+                    if( debug )console.log('god d:[',d,']');
                     tr['count'] = parseInt(d[0]['cou']);
                     tr['lastEntryDate'] = parseInt(d[0]['entryDate']);
                     tr['vNames'] = [];
@@ -54,7 +57,7 @@ class sqlHelp{
                         ) group by vName;`,
                         [location, device ], (e2, d2)=>{
                             if( this.hErr( e2 ) ){
-                                console.log('got some stats on vName ....',d2);
+                                if( debug ) console.log('got some stats on vName ....',d2);
                                 for(let r of d2 ){
                                     tr['vNames'].push(r);
                                 }
@@ -126,8 +129,8 @@ class sqlHelp{
     }
 
     resHandle = ( err, rows )=>{
-        if( err ){
-            console.error("Error selecting resHendle ",err.message);
+        if( err && debug ){
+            console.error("[i] on createV1 got soft ee ",err.message);
         }else{
             //console.log('rows',rows);
 
@@ -138,6 +141,7 @@ class sqlHelp{
 
 }
 
+/*
 let sqt = new sqlHelp('./db_test1.sqlite');
 sqt.newSetting('sqlHelp.js','dell',( setting_id )=>{
     sqt.newItem(setting_id,'test1', 'hello world');
@@ -145,7 +149,8 @@ sqt.newSetting('sqlHelp.js','dell',( setting_id )=>{
 });
 
 sqt.myBackupStatus('sqlHelp.js','dell',(rap)=>{
-    console.log('my backup status back\n',rap);
+    console.log('[i] my backup status back\n',rap);
 });
+*/
 
 export { sqlHelp }

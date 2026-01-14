@@ -1,6 +1,4 @@
 
-console.log("m_wiki.js included .... ");
-
 //import { hotHelperServer } from "/home/yoyo/Apps/viteyss/libs/hotHelper.js"; // TODO FIX
 import { hotHelperServer } from './libs/hotHelper.js'; // test 1
 
@@ -13,9 +11,10 @@ import { sqlHelp } from "./libs/sqlHelp.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+let debug = 'viteyssDebug' in process.env ? (process.env.viteyssDebug=='true'?true:false) : false;
 
 
-console.log('settings1 pDir investigation ... ',process.cwd(),{__dirname, __filename});
+if( debug )console.log('settings1 pDir investigation ... ',process.cwd(),{__dirname, __filename});
 
 class m_settings1 extends hotHelperServer{
     constructor( ws ){
@@ -32,7 +31,7 @@ class m_settings1 extends hotHelperServer{
     }
 
     cl( str ){
-        console.log('m_settings1',str);
+        if( debug ) console.log('m_settings1',str);
     }    
 
     setServer(server){

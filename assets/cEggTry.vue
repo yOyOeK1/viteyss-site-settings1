@@ -134,9 +134,9 @@ export default{
         },
 
         eTryClick(e, field){
-            //console.log('cE click on field name:'+field.name,
-            //    '\n event e: ',e
-            //);
+            console.log('cE click on field name:'+field.name,
+                '\n event e: ',e
+            );
 
 
             this.pos = [ e.clientX, e.clientY-20 ];
@@ -207,12 +207,26 @@ export default{
                 tr = bObj;
 
             }
-            for(let i=1; i<sp.length-1; i++ ){
-                bObj = bObj[ sp[i] ];
-            }
+            let spKey = undefined;
+            try{
 
-            if( sp.length > 1 )
-                tr = bObj[ sp[ sp.length-1 ] ];
+                for(let i=1; i<sp.length-1; i++ ){
+                    spKey = sp[ i ];
+                    //console.log(' cEgg path spin i:'+i+' spKey:'+spKey);
+                    if( spKey in bObj )
+                        bObj = bObj[ spKey ];
+                    else{
+                        //console.log('EE path broken ... :/');
+                        return undefined;
+                    }
+                }
+                
+                if( sp.length > 1 )
+                    tr = bObj[ sp[ sp.length-1 ] ];
+
+            }catch(e){
+                console.log(`EE with spinging 1234 key:[${spKey}]\nerror\n`,e);
+            }
 
             return tr;
         },
@@ -228,7 +242,7 @@ export default{
                     this.tNowNice = new Date().toLocaleTimeString();
 
 
-                    //console.log('cEggTry ... watcher ');
+                    //console.log('cEggTry ... watcher ', this.watchList);
                     for( let w of this.watchList ){
                         let vNow = this.getValFromStrPathVal( w.key );
                         if( `${vNow}` != `${w.lastV}` ){
