@@ -43,7 +43,7 @@
                     margin-top:10px;
                     z-index:20;
                     padding:10px;
-                    min-width:200px;
+                    min-width:70vw;
                     max-height:66vh;
                     left:${pointPos[0]}px;
                     top:${pointPos[1]}px;
@@ -75,6 +75,7 @@ props:{
     'title':  { type: String, default: 'NaN_title' },
     'icon':  { type: String, default: '<i class="fa-solid fa-ellipsis-vertical"/>' },
     'btShowHide': { type: Boolean, default: true },
+   
     
 },
 emits: [ 'update:is-showing' ],
